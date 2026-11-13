@@ -177,7 +177,7 @@ struct DailyIntakeEditorView: View {
             } header: {
                 Text("Par jour")
             } footer: {
-                Text("Valeurs par défaut pour un adulte : apports de référence européens (énergie, protéines, sucres, graisses saturées), ANSES pour les fibres, OMS pour le sel. Détail dans « Sources et méthode ».")
+                Text("Valeurs par défaut pour un adulte : apports de référence européens (énergie, protéines, glucides, sucres, graisses saturées), ANSES pour les fibres, OMS pour le sel. Détail dans « Sources et méthode ».")
             }
 
             Section {

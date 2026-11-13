@@ -53,6 +53,14 @@ struct ResultView: View {
                 }
             }
 
+            Section {
+                ForEach(NutrientField.allCases) { field in
+                    factRow(field.title, product.facts[field], unit: field.unit)
+                }
+            } header: {
+                Text("Valeurs pour 100 g")
+            }
+
             if !evaluation.missing.isEmpty {
                 Section("Critères ignorés") {
                     ForEach(evaluation.missing) { criterion in
@@ -102,7 +110,7 @@ struct ResultView: View {
                 if let energy = product.facts.energyKcal {
                     Text("\(energy.formatted(.number.precision(.fractionLength(0...1)))) kcal pour 100 g · profil \(store.selected.title)")
                 }
-                Text("Les % sont la part de l'apport quotidien couverte par 100 kcal du produit, soit \(formattedPercent(store.dailyIntake.percentOfEnergyPer100kcal)) de vos \(store.dailyIntake.energyKcal.formatted()) kcal par jour. Au-delà de ce repère, le nutriment est apporté plus que proportionnellement.")
+                Text("Les % sont la part de l'apport quotidien couverte par 100 kcal du produit (ou par 100 g, quand c'est précisé). 100 kcal représentent \(formattedPercent(store.dailyIntake.percentOfEnergyPer100kcal)) de vos \(store.dailyIntake.energyKcal.formatted()) kcal par jour. Au-delà de ce repère, le nutriment est apporté plus que proportionnellement.")
             }
         }
 
@@ -111,6 +119,17 @@ struct ResultView: View {
                 ForEach(evaluation.cautions) { result in
                     SummaryRow(result: result, intake: store.dailyIntake)
                 }
+            }
+        }
+    }
+
+    private func factRow(_ title: String, _ value: Double?, unit: String) -> some View {
+        LabeledContent(title) {
+            if let value {
+                Text("\(value.formatted(.number.precision(.fractionLength(0...2)))) \(unit)")
+                    .monospacedDigit()
+            } else {
+                Text("—").foregroundStyle(.secondary)
             }
         }
     }
@@ -147,6 +166,7 @@ private struct SummaryRow: View {
 
     var body: some View {
         let percent = formattedPercent(intake.percent(of: result))
+        let percentPer100g = formattedPercent(intake.percentPer100g(of: result))
         HStack(spacing: 12) {
             Image(systemName: result.level.iconName)
                 .font(.title2)
@@ -159,14 +179,17 @@ private struct SummaryRow: View {
                 Text("\(result.formattedPer100kcal) g / 100 kcal")
                     .font(.subheadline.monospacedDigit())
                     .foregroundStyle(.secondary)
-                Text("\(percent) de l'apport quotidien")
+                Text("\(percent) de l'apport / 100 kcal")
                     .font(.footnote.monospacedDigit().weight(.semibold))
                     .foregroundStyle(result.level.color)
+                Text("\(percentPer100g) de l'apport / 100 g")
+                    .font(.footnote.monospacedDigit())
+                    .foregroundStyle(.secondary)
             }
         }
         .padding(.vertical, 4)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(String(localized: "\(result.explanation). \(percent) de l'apport quotidien."))
+        .accessibilityLabel(String(localized: "\(result.explanation). \(percent) de l'apport quotidien pour 100 kcal, \(percentPer100g) pour 100 g."))
     }
 }
 
@@ -182,7 +205,7 @@ private struct CriterionRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(result.explanation)
                     .font(.subheadline)
-                Text("\(formattedPercent(intake.percent(of: result))) de l'apport quotidien (\(intake[result.criterion].formatted()) g)")
+                Text("\(formattedPercent(intake.percent(of: result))) de l'apport quotidien pour 100 kcal, \(formattedPercent(intake.percentPer100g(of: result))) pour 100 g (\(intake[result.criterion].formatted()) g par jour)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
