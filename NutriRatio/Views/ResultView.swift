@@ -208,7 +208,10 @@ private struct CriterionRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(result.explanation)
                     .font(.subheadline)
-                Text("\(formattedPercent(intake.percent(of: result))) de l'apport quotidien pour 100 kcal, \(formattedPercent(intake.percentPer100g(of: result))) pour 100 g (\(intake[result.criterion].formatted()) g par jour)")
+                Text("\(formattedPercent(intake.percent(of: result))) de l'apport quotidien pour 100 kcal")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Text("\(formattedPercent(intake.percentPer100g(of: result))) pour 100 g (\(intake[result.criterion].formatted()) g par jour)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -235,7 +238,10 @@ private struct CarbohydratesRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Glucides : \(perKcal) g pour 100 kcal, sans verdict")
                     .font(.subheadline)
-                Text("\(percentKcal) de l'apport quotidien pour 100 kcal, \(percent100g) pour 100 g (\(intake.carbohydrates.formatted()) g par jour)")
+                Text("\(percentKcal) de l'apport quotidien pour 100 kcal")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Text("\(percent100g) pour 100 g (\(intake.carbohydrates.formatted()) g par jour)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
