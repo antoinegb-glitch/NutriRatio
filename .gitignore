@@ -1,0 +1,10 @@
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+.swiftpm/
+# Généré par xcodegen à partir de project.yml
+NutriRatio.xcodeproj/
+# Identifiant de l'iPhone utilisé par installer-iphone.sh (propre à chaque machine)
+.iphone-udid
