@@ -68,7 +68,7 @@ final class ScoringEngineTests: XCTestCase {
         for config in [balanced, cutting, bulking] {
             let evaluation = ScoringEngine.evaluate(soda, config: config)
             XCTAssertTrue(evaluation.strengths.isEmpty)
-            XCTAssertEqual(titles(evaluation.cautions), [.carbohydrates, .sugars])
+            XCTAssertEqual(titles(evaluation.cautions), [.sugars])
         }
     }
 
@@ -105,19 +105,7 @@ final class ScoringEngineTests: XCTestCase {
         facts.fiber = nil
         let evaluation = ScoringEngine.evaluate(facts, config: balanced)
         XCTAssertEqual(evaluation.missing, [.fiber])
-        XCTAssertEqual(evaluation.criteria.count, 5)
-    }
-
-    /// Pain complet (34 g de glucides pour 182 kcal, soit 18,7 g pour 100 kcal) : moyen en Équilibré et en Prise de masse,
-    /// élevé en Sèche.
-    func testCarbohydratesAreJudgedPer100kcal() throws {
-        let bread = NutritionFacts(energyKcal: 182, carbohydrates: 34)
-        func level(_ config: ProfileConfig) throws -> Verdict {
-            try XCTUnwrap(ScoringEngine.evaluate(bread, config: config).criteria.first { $0.criterion == .carbohydrates }).level
-        }
-        XCTAssertEqual(try level(balanced), .average)
-        XCTAssertEqual(try level(bulking), .average)
-        XCTAssertEqual(try level(cutting), .notInteresting)
+        XCTAssertEqual(evaluation.criteria.count, 4)
     }
 
     func testVeryLowEnergyIsNotApplicable() {
@@ -138,7 +126,7 @@ final class ScoringEngineTests: XCTestCase {
     }
 
     func testNoCriteriaIsNotApplicable() {
-        let facts = NutritionFacts(energyKcal: 200, fat: 10)
+        let facts = NutritionFacts(energyKcal: 200, fat: 10, carbohydrates: 20)
         let evaluation = ScoringEngine.evaluate(facts, config: balanced)
         XCTAssertEqual(evaluation.notApplicable, .noCriteria)
         XCTAssertEqual(evaluation.missing.count, Criterion.allCases.count)
@@ -263,7 +251,6 @@ final class ScoringEngineTests: XCTestCase {
         let store = ProfileStore(defaults: defaults)
         XCTAssertEqual(store.selected, .bulking)
         XCTAssertEqual(store.config(for: .cutting).protein.low, 6)
-        XCTAssertEqual(store.config(for: .cutting).carbohydrates, DefaultProfiles.balanced.carbohydrates)
         XCTAssertEqual(store.dailyIntake, DefaultProfiles.dailyIntake)
     }
 }

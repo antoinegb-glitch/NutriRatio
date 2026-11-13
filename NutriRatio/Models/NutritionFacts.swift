@@ -21,11 +21,11 @@ enum NutrientField: String, CaseIterable, Codable, Hashable, Identifiable {
 
     var unit: String { self == .energy ? "kcal" : "g" }
 
-    /// Vrai si le champ entre dans le calcul de la note (énergie + les six critères).
+    /// Vrai si le champ entre dans le calcul de la note (énergie + les cinq critères).
     var isUsedForScoring: Bool {
         switch self {
-        case .energy, .saturatedFat, .carbohydrates, .sugars, .fiber, .protein, .salt: true
-        case .fat: false
+        case .energy, .saturatedFat, .sugars, .fiber, .protein, .salt: true
+        case .fat, .carbohydrates: false
         }
     }
 }

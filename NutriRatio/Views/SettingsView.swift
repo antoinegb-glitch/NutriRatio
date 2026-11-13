@@ -145,7 +145,7 @@ struct ProfileEditorView: View {
 /// Édition des apports quotidiens de référence, communs à tous les profils.
 struct DailyIntakeEditorView: View {
     private enum Field: Hashable {
-        case energy, criterion(Criterion)
+        case energy, carbohydrates, criterion(Criterion)
     }
 
     @Environment(ProfileStore.self) private var store
@@ -166,6 +166,7 @@ struct DailyIntakeEditorView: View {
         Form {
             Section {
                 row(String(localized: "Énergie"), value: intake.energyKcal, unit: "kcal", field: .energy)
+                row(String(localized: "Glucides"), value: intake.carbohydrates, unit: "g", field: .carbohydrates)
                 ForEach(Criterion.allCases) { criterion in
                     row(criterion.title, value: intake[criterion], unit: "g", field: .criterion(criterion))
                 }

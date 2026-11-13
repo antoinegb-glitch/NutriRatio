@@ -16,7 +16,6 @@ struct DailyIntake: Codable, Hashable {
             switch criterion {
             case .protein: protein
             case .fiber: fiber
-            case .carbohydrates: carbohydrates
             case .sugars: sugars
             case .saturatedFat: saturatedFat
             case .salt: salt
@@ -26,7 +25,6 @@ struct DailyIntake: Codable, Hashable {
             switch criterion {
             case .protein: protein = newValue
             case .fiber: fiber = newValue
-            case .carbohydrates: carbohydrates = newValue
             case .sugars: sugars = newValue
             case .saturatedFat: saturatedFat = newValue
             case .salt: salt = newValue
@@ -59,7 +57,7 @@ struct DailyIntake: Codable, Hashable {
     }
 
     var isValid: Bool {
-        energyKcal > 0 && Criterion.allCases.allSatisfy { self[$0] > 0 }
+        energyKcal > 0 && carbohydrates > 0 && Criterion.allCases.allSatisfy { self[$0] > 0 }
     }
 
     /// Part de l'apport quotidien couverte par 100 kcal du produit, en %.

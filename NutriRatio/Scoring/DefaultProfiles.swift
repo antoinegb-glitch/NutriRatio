@@ -13,9 +13,6 @@ import Foundation
 ///   (5 g et 30 / 4 = 7,5 g).
 /// - Fibres — allégations européennes : « source de fibres » = 1,5 g pour 100 kcal ;
 ///   « riche en fibres » = 3 g pour 100 kcal.
-/// - Glucides — ANSES (2016) : 40 à 55 % de l'énergie (55 / 4 ≈ 14 g, seuil bas) ; OMS/FAO :
-///   jusqu'à 75 % (75 / 4 ≈ 19 g, seuil haut). Sèche : 40 à 55 % (10 et 14 g). Prise de masse :
-///   seuil haut à 22 g (choix de conception). Un féculent complet peut donc être « moyen ».
 /// - Sucres — OMS : moins de 10 % de l'énergie (10 / 4 = 2,5 g), idéalement moins de 5 %
 ///   (1,25 g).
 /// - Graisses saturées — EFSA / repères usuels : moins de 10 % de l'énergie
@@ -39,7 +36,6 @@ enum DefaultProfiles {
     static let balanced = ProfileConfig(
         protein: .init(low: 3, high: 5),
         fiber: .init(low: 1.5, high: 3),
-        carbohydrates: .init(low: 14, high: 19),
         sugars: .init(low: 1.25, high: 2.5),
         saturatedFat: .init(low: 1.1, high: 1.45),
         salt: .init(low: 0.25, high: 0.33)
@@ -49,7 +45,6 @@ enum DefaultProfiles {
     static let cutting = ProfileConfig(
         protein: .init(low: 5, high: 7.5),
         fiber: .init(low: 1.5, high: 3),
-        carbohydrates: .init(low: 10, high: 14),
         sugars: .init(low: 1.25, high: 2.5),
         saturatedFat: .init(low: 1.1, high: 1.45),
         salt: .init(low: 0.25, high: 0.33)
@@ -59,7 +54,6 @@ enum DefaultProfiles {
     static let bulking = ProfileConfig(
         protein: .init(low: 3, high: 5),
         fiber: .init(low: 1.25, high: 2.5),
-        carbohydrates: .init(low: 14, high: 22),
         sugars: .init(low: 2.5, high: 4.5),
         saturatedFat: .init(low: 1.1, high: 1.45),
         salt: .init(low: 0.25, high: 0.33)

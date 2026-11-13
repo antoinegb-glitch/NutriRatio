@@ -50,6 +50,9 @@ struct ResultView: View {
                     ForEach(evaluation.criteria) { result in
                         CriterionRow(result: result, intake: store.dailyIntake)
                     }
+                    if let carbs = product.facts.carbohydrates, let kcal = product.facts.energyKcal {
+                        CarbohydratesRow(per100g: carbs, per100kcal: carbs / kcal * 100, intake: store.dailyIntake)
+                    }
                 }
             }
 
@@ -206,6 +209,33 @@ private struct CriterionRow: View {
                 Text(result.explanation)
                     .font(.subheadline)
                 Text("\(formattedPercent(intake.percent(of: result))) de l'apport quotidien pour 100 kcal, \(formattedPercent(intake.percentPer100g(of: result))) pour 100 g (\(intake[result.criterion].formatted()) g par jour)")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// Glucides : affichés avec leurs pourcentages mais sans verdict, car les repères officiels
+/// (ANSES, EFSA, OMS) sont une fourchette de l'énergie journalière, pas un plafond.
+private struct CarbohydratesRow: View {
+    let per100g: Double
+    let per100kcal: Double
+    let intake: DailyIntake
+
+    var body: some View {
+        let perKcal = per100kcal.formatted(.number.precision(.fractionLength(0...1)))
+        let percentKcal = formattedPercent(per100kcal / intake.carbohydrates * 100)
+        let percent100g = formattedPercent(per100g / intake.carbohydrates * 100)
+        HStack(alignment: .firstTextBaseline) {
+            Image(systemName: "circle.dotted")
+                .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Glucides : \(perKcal) g pour 100 kcal, sans verdict")
+                    .font(.subheadline)
+                Text("\(percentKcal) de l'apport quotidien pour 100 kcal, \(percent100g) pour 100 g (\(intake.carbohydrates.formatted()) g par jour)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
