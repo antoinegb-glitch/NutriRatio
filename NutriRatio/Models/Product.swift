@@ -3,7 +3,7 @@ import Foundation
 /// Produit alimentaire, indépendant de l'UI. Persisté tel quel dans l'historique.
 struct Product: Codable, Hashable, Identifiable {
     enum Source: String, Codable {
-        case manual, barcode, photo
+        case manual, barcode, photo, recipe
     }
 
     var id = UUID()

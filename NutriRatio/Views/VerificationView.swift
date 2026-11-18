@@ -2,13 +2,19 @@ import SwiftUI
 
 /// Écran de vérification éditable, commun aux trois modes d'entrée.
 /// Les champs manquants ou douteux sont surlignés (couleur + icône).
-struct VerificationView: View {
+/// `extra` ajoute des sections propres à l'appelant (alias d'un aliment…) sous le nom du produit.
+struct VerificationView<Extra: View>: View {
     @State private var model: VerificationViewModel
     @FocusState private var focused: NutrientField?
+    private let confirmTitle: LocalizedStringKey
+    private let extra: Extra
     private let onEvaluate: (Product) -> Void
 
-    init(input: VerificationInput, onEvaluate: @escaping (Product) -> Void) {
+    init(input: VerificationInput, confirmTitle: LocalizedStringKey = "Analyser",
+         @ViewBuilder extra: () -> Extra, onEvaluate: @escaping (Product) -> Void) {
         _model = State(initialValue: VerificationViewModel(input: input))
+        self.confirmTitle = confirmTitle
+        self.extra = extra()
         self.onEvaluate = onEvaluate
     }
 
@@ -43,6 +49,8 @@ struct VerificationView: View {
                 }
             }
 
+            extra
+
             Section {
                 ForEach(NutrientField.allCases) { field in
                     row(for: field)
@@ -60,7 +68,7 @@ struct VerificationView: View {
                     focused = nil
                     onEvaluate(model.makeProduct())
                 } label: {
-                    Text("Analyser")
+                    Text(confirmTitle)
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                 }
@@ -143,5 +151,11 @@ struct VerificationView: View {
         case .doubtful: return String(localized: "\(value) \(field.unit), à vérifier")
         case .invalid: return String(localized: "valeur invalide")
         }
+    }
+}
+
+extension VerificationView where Extra == EmptyView {
+    init(input: VerificationInput, onEvaluate: @escaping (Product) -> Void) {
+        self.init(input: input, extra: { EmptyView() }, onEvaluate: onEvaluate)
     }
 }

@@ -21,13 +21,21 @@ extension Verdict {
 
 struct ResultView: View {
     @Environment(ProfileStore.self) private var store
+    @Environment(FoodLibrary.self) private var library
     let product: Product
+    /// Renseigné pour une recette : ajoute bandeau « partiel » et totaux. Le produit est alors la recette au 100 g.
+    var recipe: RecipeCalculation?
+    @State private var showSaveFood = false
 
     var body: some View {
         @Bindable var store = store
         let evaluation = ScoringEngine.evaluate(product.facts, config: store.activeConfig)
 
         List {
+            if let recipe, recipe.isPartial {
+                Section { RecipePartialBanner(calculation: recipe) }
+            }
+
             Section {
                 Picker("Profil", selection: $store.selected) {
                     ForEach(ProfileKind.allCases) { kind in
@@ -64,6 +72,10 @@ struct ResultView: View {
                 Text("Valeurs pour 100 g")
             }
 
+            if let recipe {
+                RecipeTotalsSections(calculation: recipe)
+            }
+
             if !evaluation.missing.isEmpty {
                 Section("Critères ignorés") {
                     ForEach(evaluation.missing) { criterion in
@@ -92,6 +104,16 @@ struct ResultView: View {
         }
         .navigationTitle(product.name.isEmpty ? String(localized: "Résultat") : product.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if recipe == nil {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Enregistrer dans Mon aliment", systemImage: "tray.and.arrow.down") { showSaveFood = true }
+                }
+            }
+        }
+        .sheet(isPresented: $showSaveFood) {
+            FoodEditSheet(input: VerificationInput(product: product)) { library.save($0) }
+        }
     }
 
     /// Points forts et points à surveiller, rapportés aux calories : pas de note globale.

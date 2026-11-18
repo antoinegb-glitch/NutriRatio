@@ -13,7 +13,7 @@ let package = Package(
             name: "NutriRatio",
             path: "NutriRatio",
             exclude: ["Views", "ViewModels", "Resources", "NutriRatioApp.swift"],
-            sources: ["Models", "Scoring", "Parsing", "Services"]
+            sources: ["Models", "Scoring", "Parsing", "Services", "Recipes"]
         ),
         .testTarget(
             name: "NutriRatioTests",

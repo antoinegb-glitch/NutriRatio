@@ -7,6 +7,11 @@ enum Route: Hashable {
     case result(Product)
     case settings
     case sources
+    case foods
+    case recipes
+    case pasteRecipe
+    case recipeEditor(RecipeEditorSeed)
+    case recipeResult(UUID)
 }
 
 struct HomeView: View {
@@ -36,6 +41,10 @@ struct HomeView: View {
                     entryButton("Scanner un code-barres", subtitle: "Recherche dans Open Food Facts", icon: "barcode.viewfinder", route: .scanner)
                     entryButton("Photographier le tableau", subtitle: "Lecture automatique des valeurs", icon: "camera.viewfinder", route: .photo)
                     entryButton("Saisie manuelle", subtitle: "Valeurs pour 100 g", icon: "square.and.pencil", route: .verify(VerificationInput(product: Product())))
+
+                    Divider().padding(.vertical, 4)
+                    entryButton("Recettes", subtitle: "Composition d'un plat à partir de ses ingrédients", icon: "fork.knife", route: .recipes)
+                    entryButton("Mon aliment", subtitle: "Vos produits, reconnus dans les recettes", icon: "tray.full", route: .foods)
 
                     if !history.entries.isEmpty {
                         historySection
@@ -75,6 +84,21 @@ struct HomeView: View {
                     SettingsView()
                 case .sources:
                     SourcesView()
+                case .foods:
+                    FoodLibraryView()
+                case .recipes:
+                    RecipeListView(
+                        onEdit: { path.append(.recipeEditor(RecipeEditorSeed(recipeID: $0))) },
+                        onCreate: { path.append($0) }
+                    )
+                case .pasteRecipe:
+                    PasteRecipeView { parsed in
+                        replaceTop(with: .recipeEditor(RecipeEditorSeed(parsed: parsed)))
+                    }
+                case .recipeEditor(let seed):
+                    RecipeEditorView(seed: seed) { showRecipeResult($0) }
+                case .recipeResult(let id):
+                    RecipeResultView(recipeID: id)
                 }
             }
         }
@@ -121,6 +145,12 @@ struct HomeView: View {
     private func replaceTop(with route: Route) {
         if !path.isEmpty { path.removeLast() }
         path.append(route)
+    }
+
+    /// Depuis l'éditeur : retour au résultat déjà affiché dessous (il se recalcule seul), sinon nouveau résultat.
+    private func showRecipeResult(_ id: UUID) {
+        if !path.isEmpty { path.removeLast() }
+        if path.last != .recipeResult(id) { path.append(.recipeResult(id)) }
     }
 
     private func entryButton(_ title: LocalizedStringKey, subtitle: LocalizedStringKey, icon: String, route: Route) -> some View {
@@ -200,6 +230,7 @@ private struct HistoryRow: View {
         case .barcode: "barcode"
         case .photo: "camera"
         case .manual: "square.and.pencil"
+        case .recipe: "fork.knife"
         }
     }
 }
